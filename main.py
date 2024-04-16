@@ -1,11 +1,9 @@
 
 import mip
-import chm
+import dev
 
-inst=chm.get_instance2()
+inst=dev.get_instance2()
 print(inst)
-
-chm.show_demand(inst)
 
 m=mip.Model()
 # Zusätzliche Variablen in Periode T, damit p[c][-1] definiert ist
@@ -51,7 +49,4 @@ opt_status=m.optimize()
 print("opt status: {}".format(opt_status))
 print("Gesamtkosten: {}".format(m.objective_value))
 
-chm.show_solution2(x,z,p,inst,chemical='all')
-
-chm.show_solution2(x,z,p,inst,chemical="Chlor")
-chm.show_solution2(x,z,p,inst,chemical="Schwefel")
+dev.show_solution2(x,z,p,inst,chemical='all')
