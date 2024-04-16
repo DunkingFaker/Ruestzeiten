@@ -3,7 +3,7 @@ import scipy.stats
 import numpy as np
 import matplotlib.pyplot as plt
 
-########################### all ####################################
+########################### general ####################################
 def show_demand(instance):
     fig,axs=plt.subplots(instance.C,1,figsize=(20,2*instance.C),sharex=True,sharey=True)
     axs=iter(axs.flat)
@@ -28,31 +28,18 @@ def colour_pick(quantity):
         return 'g'
     return 'gray'
 
-######################  notebook 2 ##################################
+######################  JSP ##################################
 
 class instance2:
-    def __init__(self,C=0,T=0,g=0,B=0,h=0,d=None,I=[],r=0,k=0):
-        self.C=C
+    def __init__(self,J=0,T=0,M=0):
+        self.J=J
         self.T=T
-        self.g=g
-        self.B=B
-        self.d=d
-        self.h=h
-        self.I=I
-        self.r=r
-        self.k=k
+        self.M=M
 
     def __repr__(self):
-        result= "C Anzahl Rohstoffe: ...................{}\n".format(self.C)
+        result= "J Anzahl Jobs: ...................{}\n".format(self.J)
         result+="T Anzahl Zeitperioden: ................{}\n".format(self.T)
-        result+="B Kapazität des Zwischenlagers: .......{}\n".format(self.B)
-        result+="g Kosten einer Fahrt: .................{}\n".format(self.g)
-        result+="h Kapazität der Lastwagen: ............{}\n".format(self.h)
-        result+="d Gesamtbedarf über alle Zeitperioden: {}\n".format(np.array(self.d).sum())
-        result+="k Anzahl der Lastwagen: ...............{}\n".format(self.k)
-        result+="r Fahrtzeit der Lastwagen: ............{}\n".format(self.r)
-        dangerous_pairs=", ".join([chems[pair[0]]+" & "+chems[pair[1]] for pair in self.I])
-        result+="I gefährliche Rohstoffpaare: ..........{}\n  --> {}\n".format(self.I,dangerous_pairs)
+        result+="M Anzahl Maschinen: .......{}\n".format(self.M)
         return result
     
     def __str__(self):
