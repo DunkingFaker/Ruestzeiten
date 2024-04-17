@@ -1,52 +1,27 @@
 
-import mip
-import dev
+# Imports
+%matplotlib inline
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import pandas as pd
 
-inst=dev.get_instance2()
-print(inst)
+import shutil
+import sys
+import os.path
 
-m=mip.Model()
-# Zusätzliche Variablen in Periode T, damit p[c][-1] definiert ist
-p=[[m.add_var() for _ in range(inst.T+1)] for _ in range(inst.C)]
-x=[[[m.add_var() for _ in range(inst.k)] for _ in range(inst.T)] for _ in range(inst.C)]
-y=[[[m.add_var(var_type=mip.BINARY) for _ in range(inst.k)] for _ in range(inst.T)] for _ in range(inst.C)]
-z=[[m.add_var(var_type=mip.BINARY) for _ in range(inst.k)] for _ in range(inst.T)]
+if not shutil.which("pyomo"):
+    %pip install -q pyomo
+    assert(shutil.which("pyomo"))
 
-# Bedingungen
-for t in range(inst.T):
-    m+=mip.xsum(p[c][t] for c in range(inst.C))<=inst.B
+if not (shutil.which("cbc") or os.path.isfile("cbc")):
+    if "google.colab" in sys.modules:
+        %apt-get install -y -qq coinor-cbc
+    else:
+        try:
+            %conda install -c conda-forge coincbc 
+        except:
+            pass
 
-for t in range(inst.T):
-    for v in range(inst.k):    
-        m+=mip.xsum(x[c][t][v] for c in range(inst.C))<=z[t][v]*inst.h
-
-for c in range(inst.C):
-    for t in range(inst.T):
-        for v in range(inst.k):    
-            m+=x[c][t][v]<=inst.h*y[c][t][v]
-
-for c,cc in inst.I:
-    for t in range(inst.T):
-        for v in range(inst.k):
-            m+=y[c][t][v]+y[cc][t][v]<=1
-
-for c in range(inst.C):
-    m+=p[c][-1]==0
-for t in range(inst.T):
-    for c in range(inst.C):
-        m+=p[c][t]+inst.d[c][t]==p[c][t-1]+mip.xsum(x[c][t][v] for v in range(inst.k)) 
-
-for t in range(inst.T):
-    for v in range(inst.k):
-        start=max(0,t-inst.r+1)
-        m+=mip.xsum(z[i][v] for i in range(start,t+1))<=1     
-
-# Zielfunktion
-m.objective=mip.minimize(mip.xsum(inst.g*z[t][v] for t in range(inst.T) for v in range(inst.k)))
-
-m.verbose=0 # suppress solver output
-opt_status=m.optimize()
-print("opt status: {}".format(opt_status))
-print("Gesamtkosten: {}".format(m.objective_value))
-
-dev.show_solution2(x,z,p,inst,chemical='all')
+assert(shutil.which("cbc") or os.path.isfile("cbc"))
+from pyomo.environ import *
+from pyomo.gdp import *
